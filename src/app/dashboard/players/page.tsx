@@ -36,7 +36,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { PlusCircle, Pencil, Trash2, Users, Link2, ArrowRight } from "lucide-react";
+import { PlusCircle, Pencil, Trash2, Users, Link2, ArrowRight, UserPlus } from "lucide-react";
 import Link from "next/link";
 
 const POSITIONS = [
@@ -349,12 +349,30 @@ export default function PlayersPage() {
                         <Button
                           variant="ghost"
                           size="icon"
-                          title="Copy invite link"
+                          title="Copy player invite link"
                           onClick={() => {
                             navigator.clipboard.writeText(`${window.location.origin}/invite/${player.invite_token}`);
                           }}
                         >
                           <Link2 className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          title="Send parent invite"
+                          onClick={async () => {
+                            const res = await fetch("/api/parent-invites", {
+                              method: "POST",
+                              headers: { "Content-Type": "application/json" },
+                              body: JSON.stringify({ player_id: player.id }),
+                            });
+                            if (res.ok) {
+                              const invite = await res.json();
+                              navigator.clipboard.writeText(`${window.location.origin}/invite/parent/${invite.invite_token}`);
+                            }
+                          }}
+                        >
+                          <UserPlus className="h-4 w-4" />
                         </Button>
                         <Button
                           variant="ghost"

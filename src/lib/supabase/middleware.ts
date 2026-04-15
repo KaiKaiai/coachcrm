@@ -34,12 +34,20 @@ export async function updateSession(request: NextRequest) {
   const isPublic =
     path.startsWith("/login") ||
     path.startsWith("/player/login") ||
+    path.startsWith("/parent/login") ||
     path.startsWith("/invite") ||
+    path.startsWith("/api/invite") ||
     path.startsWith("/auth");
 
   if (!user && !isPublic) {
     const url = request.nextUrl.clone();
-    url.pathname = path.startsWith("/player") ? "/player/login" : "/login";
+    if (path.startsWith("/parent")) {
+      url.pathname = "/parent/login";
+    } else if (path.startsWith("/player")) {
+      url.pathname = "/player/login";
+    } else {
+      url.pathname = "/login";
+    }
     return NextResponse.redirect(url);
   }
 
@@ -52,6 +60,12 @@ export async function updateSession(request: NextRequest) {
   if (user && path === "/player/login") {
     const url = request.nextUrl.clone();
     url.pathname = "/player/dashboard";
+    return NextResponse.redirect(url);
+  }
+
+  if (user && path === "/parent/login") {
+    const url = request.nextUrl.clone();
+    url.pathname = "/parent/dashboard";
     return NextResponse.redirect(url);
   }
 

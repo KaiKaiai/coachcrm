@@ -132,7 +132,7 @@ export default function DashboardPage() {
           <CardHeader className="flex flex-row items-center justify-between">
             <div>
               <CardTitle>Recent Sessions</CardTitle>
-              <CardDescription>Latest training recordings</CardDescription>
+              <CardDescription>Latest training recordings!!</CardDescription>
             </div>
             <Link
               href="/dashboard/sessions"

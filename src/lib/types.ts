@@ -149,6 +149,29 @@ export const DRILL_DIFFICULTIES: { value: DrillDifficulty; label: string }[] = [
   { value: "advanced", label: "Advanced" },
 ];
 
+export interface Parent {
+  id: string;
+  user_id: string | null;
+  name: string;
+  email: string;
+  created_at: string;
+}
+
+export interface ParentPlayer {
+  parent_id: string;
+  player_id: string;
+}
+
+export interface ParentInvite {
+  id: string;
+  coach_id: string;
+  player_id: string;
+  invite_token: string;
+  accepted: boolean;
+  accepted_by: string | null;
+  created_at: string;
+}
+
 export const POSITIONS = [
   "Point Guard",
   "Shooting Guard",
