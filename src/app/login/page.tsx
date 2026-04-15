@@ -123,11 +123,14 @@ export default function LoginPage() {
                 </>
               )}
             </p>
-            <p className="text-center text-sm">
+            <div className="flex justify-center gap-4 text-sm">
               <a href="/player/login" className="text-primary underline-offset-4 hover:underline">
                 I&apos;m a player
               </a>
-            </p>
+              <a href="/parent/login" className="text-primary underline-offset-4 hover:underline">
+                I&apos;m a parent
+              </a>
+            </div>
           </form>
         </CardContent>
       </Card>

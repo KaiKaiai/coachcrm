@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,7 +12,7 @@ import {
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Trophy, Loader2 } from "lucide-react";
 
-export default function PlayerLoginPage() {
+export default function ParentLoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -27,7 +26,7 @@ export default function PlayerLoginPage() {
     const supabase = createClient();
     const { error: authError } = await supabase.auth.signInWithPassword({ email, password });
     if (authError) { setError(authError.message); setLoading(false); return; }
-    router.push("/player/dashboard");
+    router.push("/parent/dashboard");
     router.refresh();
   };
 
@@ -36,8 +35,8 @@ export default function PlayerLoginPage() {
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <div className="flex justify-center mb-2"><Trophy className="h-10 w-10 text-primary" /></div>
-          <CardTitle className="text-2xl">Player Login</CardTitle>
-          <CardDescription>Sign in to view your training feedback and homework</CardDescription>
+          <CardTitle className="text-2xl">Parent Portal</CardTitle>
+          <CardDescription>Sign in to view your child&apos;s training progress</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -54,11 +53,11 @@ export default function PlayerLoginPage() {
               {loading && <Loader2 className="h-4 w-4 animate-spin" />}Sign In
             </Button>
             <p className="text-center text-sm text-muted-foreground">
-              Don&apos;t have an account? Ask your trainer for an invite link.
+              Don&apos;t have an account? Ask your child&apos;s trainer for an invite link.
             </p>
             <div className="flex justify-center gap-4 text-sm">
-              <Link href="/login" className="text-primary underline-offset-4 hover:underline">I&apos;m a trainer</Link>
-              <Link href="/parent/login" className="text-primary underline-offset-4 hover:underline">I&apos;m a parent</Link>
+              <a href="/login" className="text-primary underline-offset-4 hover:underline">I&apos;m a trainer</a>
+              <a href="/player/login" className="text-primary underline-offset-4 hover:underline">I&apos;m a player</a>
             </div>
           </form>
         </CardContent>
