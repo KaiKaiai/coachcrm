@@ -156,3 +156,35 @@ export const POSITIONS = [
   "Power Forward",
   "Center",
 ];
+
+// Parent types
+export interface Parent {
+  id: string;
+  user_id: string;
+  name: string;
+  email: string | null;
+  created_at: string;
+}
+
+export interface ParentPlayer {
+  parent_id: string;
+  player_id: string;
+  created_at: string;
+}
+
+export interface ParentInvite {
+  id: string;
+  coach_id: string;
+  player_id: string;
+  parent_id: string | null;
+  invite_token: string;
+  accepted: boolean;
+  created_at: string;
+}
+
+export interface ParentChildWithCoach extends Player {
+  coaches: Pick<Coach, "id" | "name">;
+  session_count?: number;
+  pending_homework_count?: number;
+  latest_rating?: number | null;
+}
