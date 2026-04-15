@@ -82,11 +82,24 @@ Return your response as a JSON array with the following structure for each playe
     "summary": "2-3 sentence summary of the coach's feedback for this player",
     "strengths": ["strength 1", "strength 2"],
     "improvements": ["area for improvement 1", "area for improvement 2"],
-    "drillsRecommended": ["drill 1", "drill 2"],
+    "drillsRecommended": [
+      {
+        "title": "Free Throw Practice",
+        "description": "Practice free throws focusing on consistent form and follow-through",
+        "category": "shooting",
+        "difficulty": "intermediate",
+        "sets": 5,
+        "reps": 10,
+        "estimated_minutes": 15,
+        "target_metric": "make 40 out of 50 free throws"
+      }
+    ],
     "overallRating": 7
   }
 ]
 \`\`\`
+
+For drillsRecommended, each drill must be a structured object. category must be one of: shooting, dribbling, passing, defense, conditioning, footwork, other. difficulty must be one of: beginner, intermediate, advanced. Include realistic sets, reps, estimated_minutes, and a target_metric where applicable.
 
 overallRating should be 1-10 based on the coach's tone and feedback.
 

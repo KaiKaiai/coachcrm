@@ -82,20 +82,20 @@ CREATE POLICY "Coaches manage own players" ON players
 CREATE POLICY "Coaches manage own sessions" ON training_sessions
   FOR ALL USING (coach_id = auth.uid()) WITH CHECK (coach_id = auth.uid());
 
--- Session players: accessible if the session belongs to the coach
+-- Session players: accessible if the player belongs to the coach
 CREATE POLICY "Coaches manage own session players" ON session_players
   FOR ALL USING (
     EXISTS (
-      SELECT 1 FROM training_sessions
-      WHERE training_sessions.id = session_players.session_id
-        AND training_sessions.coach_id = auth.uid()
+      SELECT 1 FROM players
+      WHERE players.id = session_players.player_id
+        AND players.coach_id = auth.uid()
     )
   )
   WITH CHECK (
     EXISTS (
-      SELECT 1 FROM training_sessions
-      WHERE training_sessions.id = session_players.session_id
-        AND training_sessions.coach_id = auth.uid()
+      SELECT 1 FROM players
+      WHERE players.id = session_players.player_id
+        AND players.coach_id = auth.uid()
     )
   );
 

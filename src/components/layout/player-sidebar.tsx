@@ -3,20 +3,15 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import {
-  LayoutDashboard, Users, ClipboardList, PlusCircle, Trophy, Dumbbell, CalendarDays,
-} from "lucide-react";
+import { LayoutDashboard, ClipboardList, BookOpen, Trophy } from "lucide-react";
 
 const navItems = [
-  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/dashboard/players", label: "Players", icon: Users },
-  { href: "/dashboard/drills", label: "Drills", icon: Dumbbell },
-  { href: "/dashboard/sessions", label: "Sessions", icon: ClipboardList },
-  { href: "/dashboard/calendar", label: "Calendar", icon: CalendarDays },
-  { href: "/dashboard/sessions/new", label: "New Session", icon: PlusCircle },
+  { href: "/player/dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/player/sessions", label: "My Sessions", icon: ClipboardList },
+  { href: "/player/homework", label: "Homework", icon: BookOpen },
 ];
 
-export function Sidebar() {
+export function PlayerSidebar() {
   const pathname = usePathname();
 
   return (
@@ -27,9 +22,7 @@ export function Sidebar() {
       </div>
       <nav className="flex-1 space-y-1 px-3 py-4">
         {navItems.map((item) => {
-          const isActive =
-            pathname === item.href ||
-            (item.href !== "/dashboard" && pathname.startsWith(item.href));
+          const isActive = pathname === item.href || (item.href !== "/player/dashboard" && pathname.startsWith(item.href));
           return (
             <Link key={item.href} href={item.href} className={cn(
               "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",

@@ -265,6 +265,9 @@ export default function SessionDetailPage({
                 feedback={fb}
                 playerName={player?.name || "Unknown Player"}
                 playerPosition={player?.position}
+                playerId={fb.player_id}
+                sessionId={id}
+                showAssign={true}
               />
             );
           })}

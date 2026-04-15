@@ -5,25 +5,19 @@ import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
 import {
-  Sheet,
-  SheetContent,
-  SheetTrigger,
-  SheetTitle,
+  Sheet, SheetContent, SheetTrigger, SheetTitle,
 } from "@/components/ui/sheet";
 import {
-  LayoutDashboard,
-  Users,
-  ClipboardList,
-  PlusCircle,
-  Trophy,
-  Menu,
+  LayoutDashboard, Users, ClipboardList, PlusCircle, Trophy, Menu, Dumbbell, CalendarDays,
 } from "lucide-react";
 import { useState } from "react";
 
 const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/dashboard/players", label: "Players", icon: Users },
+  { href: "/dashboard/drills", label: "Drills", icon: Dumbbell },
   { href: "/dashboard/sessions", label: "Sessions", icon: ClipboardList },
+  { href: "/dashboard/calendar", label: "Calendar", icon: CalendarDays },
   { href: "/dashboard/sessions/new", label: "New Session", icon: PlusCircle },
 ];
 
@@ -33,12 +27,7 @@ export function MobileNav() {
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
-      <SheetTrigger
-        className={cn(
-          buttonVariants({ variant: "ghost", size: "icon" }),
-          "md:hidden"
-        )}
-      >
+      <SheetTrigger className={cn(buttonVariants({ variant: "ghost", size: "icon" }), "md:hidden")}>
         <Menu className="h-5 w-5" />
       </SheetTrigger>
       <SheetContent side="left" className="w-64 p-0">
@@ -49,21 +38,12 @@ export function MobileNav() {
         </div>
         <nav className="space-y-1 px-3 py-4">
           {navItems.map((item) => {
-            const isActive =
-              pathname === item.href ||
-              (item.href !== "/dashboard" && pathname.startsWith(item.href));
+            const isActive = pathname === item.href || (item.href !== "/dashboard" && pathname.startsWith(item.href));
             return (
-              <Link
-                key={item.href}
-                href={item.href}
-                onClick={() => setOpen(false)}
-                className={cn(
-                  "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
-                  isActive
-                    ? "bg-primary text-primary-foreground"
-                    : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
-                )}
-              >
+              <Link key={item.href} href={item.href} onClick={() => setOpen(false)} className={cn(
+                "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
+                isActive ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+              )}>
                 <item.icon className="h-4 w-4" />
                 {item.label}
               </Link>

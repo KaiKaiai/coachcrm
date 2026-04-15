@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import type { Player } from "@/lib/types";
+import React, { useEffect, useState } from "react";
+import type { Player, PlayerDrillWithDrill } from "@/lib/types";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -36,7 +36,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { PlusCircle, Pencil, Trash2, Users } from "lucide-react";
+import { PlusCircle, Pencil, Trash2, Users, Link2, ArrowRight } from "lucide-react";
+import Link from "next/link";
 
 const POSITIONS = [
   "Point Guard",
@@ -136,6 +137,8 @@ function PlayerForm({
 
 export default function PlayersPage() {
   const [players, setPlayers] = useState<Player[]>([]);
+  const [allDrills, setAllDrills] = useState<PlayerDrillWithDrill[]>([]);
+  const [expandedPlayer, setExpandedPlayer] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingPlayer, setEditingPlayer] = useState<Player | undefined>();
@@ -152,9 +155,35 @@ export default function PlayersPage() {
     }
   };
 
+  const fetchDrills = async () => {
+    try {
+      const res = await fetch("/api/player-drills");
+      const data = await res.json();
+      if (Array.isArray(data)) setAllDrills(data);
+    } catch (err) {
+      console.error("Failed to fetch drills:", err);
+    }
+  };
+
   useEffect(() => {
     fetchPlayers();
+    fetchDrills();
   }, []);
+
+  const getDrillsForPlayer = (playerId: string) =>
+    allDrills.filter((d) => d.player_id === playerId);
+
+  const getDrillCounts = (playerId: string) => {
+    const pDrills = getDrillsForPlayer(playerId);
+    return {
+      total: pDrills.length,
+      completed: pDrills.filter((d) => d.status === "completed").length,
+      pending: pDrills.filter((d) => d.status !== "completed").length,
+    };
+  };
+
+  const statusBadge = (s: string) =>
+    s === "completed" ? "default" as const : s === "in_progress" ? "secondary" as const : "outline" as const;
 
   const handleAdd = async (data: Partial<Player>) => {
     try {
@@ -267,13 +296,15 @@ export default function PlayersPage() {
                   <TableHead className="w-12">#</TableHead>
                   <TableHead>Name</TableHead>
                   <TableHead>Position</TableHead>
-                  <TableHead>Email</TableHead>
-                  <TableHead className="w-24">Actions</TableHead>
+                  <TableHead>Drills</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead className="w-32">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {players.map((player) => (
-                  <TableRow key={player.id}>
+                  <React.Fragment key={player.id}>
+                  <TableRow>
                     <TableCell className="font-mono">
                       {player.jersey_number ?? "-"}
                     </TableCell>
@@ -287,11 +318,44 @@ export default function PlayersPage() {
                         <span className="text-muted-foreground">-</span>
                       )}
                     </TableCell>
-                    <TableCell className="text-muted-foreground">
-                      {player.email || "-"}
+                    <TableCell>
+                      {(() => {
+                        const c = getDrillCounts(player.id);
+                        return c.total > 0 ? (
+                          <button
+                            onClick={() => setExpandedPlayer(expandedPlayer === player.id ? null : player.id)}
+                            className="text-sm text-left hover:underline"
+                          >
+                            <span className="font-medium">{c.total}</span>
+                            <span className="text-muted-foreground text-xs ml-1">
+                              ({c.completed} done, {c.pending} pending)
+                            </span>
+                            <span className="text-muted-foreground text-xs ml-1">
+                              {expandedPlayer === player.id ? "▲" : "▼"}
+                            </span>
+                          </button>
+                        ) : (
+                          <span className="text-muted-foreground text-sm">0</span>
+                        );
+                      })()}
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant={player.invite_accepted ? "default" : "outline"}>
+                        {player.invite_accepted ? "Active" : "Invited"}
+                      </Badge>
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-1">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          title="Copy invite link"
+                          onClick={() => {
+                            navigator.clipboard.writeText(`${window.location.origin}/invite/${player.invite_token}`);
+                          }}
+                        >
+                          <Link2 className="h-4 w-4" />
+                        </Button>
                         <Button
                           variant="ghost"
                           size="icon"
@@ -306,9 +370,66 @@ export default function PlayersPage() {
                         >
                           <Trash2 className="h-4 w-4 text-destructive" />
                         </Button>
+                        <Link href={`/dashboard/players/${player.id}`} className={cn(buttonVariants({ variant: "ghost", size: "icon" }))}>
+                          <ArrowRight className="h-4 w-4" />
+                        </Link>
                       </div>
                     </TableCell>
                   </TableRow>
+                  {expandedPlayer === player.id && (
+                    <TableRow>
+                      <TableCell colSpan={6} className="bg-muted/30 p-0">
+                        <div className="px-6 py-3 space-y-2">
+                          <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                            Assigned Drills for {player.name}
+                          </p>
+                          {getDrillsForPlayer(player.id).length === 0 ? (
+                            <p className="text-sm text-muted-foreground">No drills assigned.</p>
+                          ) : (
+                            <div className="space-y-1.5">
+                              {getDrillsForPlayer(player.id).map((pd) => {
+                                const drill = (pd as any).drills;
+                                return (
+                                  <div
+                                    key={pd.id}
+                                    className="flex items-center justify-between rounded border bg-background px-3 py-2"
+                                  >
+                                    <div className="flex items-center gap-3 min-w-0">
+                                      <div className="min-w-0">
+                                        <p className="font-medium text-sm truncate">
+                                          {drill?.title || "Unknown drill"}
+                                        </p>
+                                        <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                                          {drill?.category && (
+                                            <Badge variant="secondary" className="text-xs">
+                                              {drill.category}
+                                            </Badge>
+                                          )}
+                                          {drill?.difficulty && (
+                                            <span>{drill.difficulty}</span>
+                                          )}
+                                          {drill?.sets && drill?.reps && (
+                                            <span>{drill.sets}x{drill.reps}</span>
+                                          )}
+                                          {pd.due_date && (
+                                            <span>Due: {new Date(pd.due_date).toLocaleDateString()}</span>
+                                          )}
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <Badge variant={statusBadge(pd.status)}>
+                                      {pd.status.replace("_", " ")}
+                                    </Badge>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          )}
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  )}
+                  </React.Fragment>
                 ))}
               </TableBody>
             </Table>
